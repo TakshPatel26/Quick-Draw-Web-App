@@ -92,6 +92,12 @@ body {
   border-color: #f2b3b3;
 }
 
+.retry-btn {
+  margin-left: 8px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
 .sketch-word-label {
   font-size: 1.6rem;
   margin: 12px 0 6px;

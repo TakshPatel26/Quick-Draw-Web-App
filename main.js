@@ -344,8 +344,40 @@ function growBBox(x, y) {
 /* ---------------------------------------------------------------------
    5. Model loading
 --------------------------------------------------------------------- */
+function waitForTensorFlow() {
+  // tf-loader.js injects the TensorFlow.js <script> tag asynchronously
+  // (local vendor/tf.min.js first, then CDN fallbacks), so `tf` may not be
+  // defined yet even after DOMContentLoaded. Check its already-settled
+  // status first (covers the case where it finished before we got here),
+  // then fall back to listening for its ready/failed signal.
+  if (typeof tf !== "undefined") return Promise.resolve();
+  const status = window.tfjsLoaderStatus;
+  if (status && status.done) {
+    return status.ok
+      ? Promise.resolve()
+      : Promise.reject(new Error(
+          "TensorFlow.js failed to load from the local file (vendor/tf.min.js) " +
+          "and all CDN fallbacks. " + (status.error ? status.error.message : "")
+        ));
+  }
+  return new Promise((resolve, reject) => {
+    window.addEventListener("tfjs-ready", () => resolve(), { once: true });
+    window.addEventListener("tfjs-failed", (evt) => {
+      reject(new Error(
+        "TensorFlow.js failed to load from the local file (vendor/tf.min.js) " +
+        "and all CDN fallbacks. " +
+        (evt.detail && evt.detail.error ? evt.detail.error.message : "")
+      ));
+    }, { once: true });
+  });
+}
+
 async function loadModel() {
+  els.status.classList.remove("ready", "error");
   try {
+    els.status.textContent = "Loading TensorFlow.js…";
+    await waitForTensorFlow();
+
     els.status.textContent = "Loading recognition model…";
     model = await tf.loadLayersModel(MODEL_URL);
     // Warm up so the first real prediction isn't slow.
@@ -354,10 +386,21 @@ async function loadModel() {
     els.status.textContent = "Model ready — start drawing!";
     els.status.classList.add("ready");
   } catch (err) {
-    console.error("Failed to load model", err);
-    els.status.textContent = "Could not load the model. Check your connection and reload.";
+    console.error("Failed to load model:", err);
+    modelReady = false;
+    els.status.innerHTML =
+      "Could not load the model (" + escapeHtml(err && err.message ? err.message : String(err)) + "). " +
+      '<button id="retry-model-btn" class="btn btn-secondary retry-btn">Retry</button>';
     els.status.classList.add("error");
+    const retryBtn = document.getElementById("retry-model-btn");
+    if (retryBtn) retryBtn.addEventListener("click", loadModel);
   }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 /* ---------------------------------------------------------------------
