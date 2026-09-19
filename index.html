@@ -9,8 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="style.css">
 
-  <!-- TensorFlow.js: powers the local DoodleNet CNN used for recognition -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <!--
+    TensorFlow.js: powers the local DoodleNet CNN used for recognition.
+    Vendored locally (vendor/tf.min.js) so the app works even when a CDN
+    (jsdelivr/unpkg/cdnjs) is blocked by a network/firewall/ad-blocker —
+    which is the most common cause of "Could not load the model" errors.
+    tf-loader.js falls back to a CDN copy only if the local file is ever
+    missing or fails to load for some other reason.
+  -->
+  <script src="tf-loader.js"></script>
 </head>
 <body>
   <header class="app-header">
