@@ -1,43 +1,82 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Quick Draw Web App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js" type="text/javascript"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
+
+  <!-- TensorFlow.js: powers the local DoodleNet CNN used for recognition -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
 </head>
 <body>
-  <center>
-<div id="myModal" class="modal fade">
-  <div class="modal-content">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title">Sketches</h4>
+  <header class="app-header">
+    <h1>Quick Draw Web App</h1>
+    <button id="show-sketch-btn" class="btn btn-info" data-toggle="modal" data-target="#sketchModal">Show Examples</button>
+  </header>
+
+  <div id="sketchModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-close" id="modal-close">&times;</span>
+        <h4 class="modal-title">Sketches</h4>
+      </div>
+      <div class="modal-body">
+        <img src="Quick Draw Web App 1.png" alt="Sketch example 1">
+        <img src="Quick Draw Web App 2.png" alt="Sketch example 2">
+      </div>
     </div>
-<div class="modal-body">
-      <img src="Quick Draw Web App 1.png">
-      <br>
-      <img src="Quick Draw Web App 2.png">
-    </div>
-</div>
-</div>
-<h1>Quick Draw Web App
-<button id="show_sketch" class="btn btn-info" data-toggle="modal" data-target="#myModal">Show Sketch</button>
-  </h1>
-  <p id="your_sketch">Your Sketch: </p>
-  <p id="confidence">Confidence: </p>
-  <p id="sketch_to_be_drawn">Sketch To Be Drawn: </p>
-</center> 
-<span id="score">Score: </span>
-<span id="timer">Timer: </span>
-<script src="main.js"></script>
+  </div>
+
+  <main class="app-main">
+    <section class="prompt-panel">
+      <p id="model-status" class="model-status">Loading recognition model…</p>
+      <p class="sketch-word-label">Draw:
+        <span id="sketch-word" class="sketch-word">…</span>
+      </p>
+      <div class="hud">
+        <span id="score" class="hud-item">Score: 0</span>
+        <span id="timer" class="hud-item">Time: 30</span>
+      </div>
+    </section>
+
+    <section class="canvas-panel">
+      <canvas id="draw-canvas" width="350" height="350"></canvas>
+      <div id="result-banner" class="result-banner"></div>
+      <div class="controls">
+        <label class="brush-label">
+          Brush size
+          <input type="range" id="brush-size" min="4" max="24" value="12">
+        </label>
+        <button id="clear-btn" class="btn btn-secondary">Clear</button>
+        <button id="skip-btn" class="btn btn-secondary">Skip Word</button>
+      </div>
+    </section>
+
+    <section class="predictions-panel">
+      <h3>AI's guesses</h3>
+      <div id="predictions" class="predictions"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Powered by a real Quick, Draw! CNN (DoodleNet, 345 categories) running 100% locally in your browser via TensorFlow.js.</p>
+  </footer>
+
+  <script>
+    // Minimal modal open/close (no Bootstrap/jQuery dependency needed anymore).
+    document.addEventListener("DOMContentLoaded", function () {
+      var modal = document.getElementById("sketchModal");
+      var openBtn = document.getElementById("show-sketch-btn");
+      var closeBtn = document.getElementById("modal-close");
+      openBtn.addEventListener("click", function () { modal.classList.add("open"); });
+      closeBtn.addEventListener("click", function () { modal.classList.remove("open"); });
+      modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("open"); });
+    });
+  </script>
+  <script src="main.js"></script>
 </body>
 </html>
