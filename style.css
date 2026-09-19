@@ -1,42 +1,273 @@
-body{
-     background-color: greenyellow;
-   }
-h1{
-     font-family: 'Special Elite', fantasy;
-     color:rgb(38, 0, 255);
-     background-color: cornsilk;
-   }
-#show_sketch{
-     float:right;
-     height:40px;
-     width:110px;
-   }
-#timer{
-     float: right;
-   }
-#sketch_to_be_drawn{
-     color: red;
-   }
-canvas {
-       border:2px solid white;
-       border-radius:20px;
-       margin-top:135px;
-       box-shadow:5px 5px 5px grey;
-       box-shadow: 1px 1px 38px #ffffff;
-       animation-name: example;
-       animation-duration: 4s;
-       animation-iteration-count: infinite;
-   }
-@keyframes example{
-   from{
-        box-shadow: 1px 1px 38px red;
-     }
-     to{
-          box-shadow: 1px 1px 38px green;
-     }
-   }
-p, span{
-       padding-top:10px;
-       font-family: 'Special Elite', fantasy;
-       font-size:25px;
-   }
+:root {
+  --bg: #eef7ff;
+  --panel-bg: #ffffff;
+  --accent: #2b3fff;
+  --accent-2: #ff6b6b;
+  --success: #17a672;
+  --text: #1c2430;
+  --border: #d7e3f0;
+  font-family: 'Special Elite', fantasy;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: linear-gradient(160deg, #eef7ff 0%, #dff3e6 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: cornsilk;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.app-header h1 {
+  margin: 0;
+  color: var(--accent);
+  font-family: 'Special Elite', fantasy;
+  font-size: 2rem;
+}
+
+.btn {
+  font-family: 'Special Elite', fantasy;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.btn-info { background: #5bc0de; color: #fff; }
+.btn-secondary { background: #ffffff; color: var(--text); border: 2px solid var(--border); }
+
+.app-main {
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  justify-items: center;
+}
+
+@media (min-width: 860px) {
+  .app-main {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .prompt-panel { grid-column: 1 / span 2; }
+}
+
+.prompt-panel {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.model-status {
+  font-size: 0.95rem;
+  color: #8a6d00;
+  background: #fff6dc;
+  border: 1px solid #f0dd9a;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: inline-block;
+}
+.model-status.ready {
+  color: #145a32;
+  background: #e6f7ee;
+  border-color: #b6e6cc;
+}
+.model-status.error {
+  color: #7a1f1f;
+  background: #fdeaea;
+  border-color: #f2b3b3;
+}
+
+.sketch-word-label {
+  font-size: 1.6rem;
+  margin: 12px 0 6px;
+}
+
+.sketch-word {
+  color: var(--accent-2);
+  font-weight: bold;
+}
+
+.hud {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 1.2rem;
+}
+
+.hud-item {
+  background: var(--panel-bg);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 14px;
+}
+
+.canvas-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel-bg);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+#draw-canvas {
+  background: #fff;
+  border: 3px solid var(--accent);
+  border-radius: 16px;
+  touch-action: none;
+  cursor: crosshair;
+  box-shadow: 1px 1px 25px rgba(43,63,255,0.25);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.brush-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.result-banner {
+  display: none;
+  font-size: 1.2rem;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-align: center;
+}
+.result-banner.success {
+  display: block;
+  background: #e6f7ee;
+  color: var(--success);
+  border: 2px solid #b6e6cc;
+}
+.result-banner.fail {
+  display: block;
+  background: #fdeaea;
+  color: #7a1f1f;
+  border: 2px solid #f2b3b3;
+}
+
+.predictions-panel {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel-bg);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.predictions-panel h3 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+.predictions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+}
+
+.pred-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 46px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.pred-row.match .pred-label { color: var(--success); font-weight: bold; }
+
+.pred-label { text-transform: capitalize; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.pred-bar-wrap {
+  background: #eef1f8;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 14px;
+}
+
+.pred-bar {
+  background: linear-gradient(90deg, var(--accent), #8b93ff);
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  transition: width 0.15s ease;
+}
+
+.pred-row.match .pred-bar {
+  background: linear-gradient(90deg, var(--success), #59d19d);
+}
+
+.pred-pct {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.app-footer {
+  text-align: center;
+  color: #4a5568;
+  font-size: 0.8rem;
+  padding: 24px 16px 40px;
+}
+
+/* Modal (custom, no Bootstrap dependency) */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: auto;
+  padding: 16px 20px 24px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-close {
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.modal-body img {
+  max-width: 100%;
+  display: block;
+  margin: 10px 0;
+  border-radius: 8px;
+}
